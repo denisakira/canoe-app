@@ -26,7 +26,7 @@ class FundService
             ->when($request->query('year'), function ($query, $year) {
                 $query->where('start_year', $year);
             })
-            ->when($request->query('fundManager'), function ($query, $fundManager) {
+            ->when($request->query('fund_manager'), function ($query, $fundManager) {
                 $query->where('fund_manager_id', $fundManager);
             })
             ->get();
@@ -67,18 +67,19 @@ class FundService
         if ($data['aliases']) {
             foreach ($data['aliases'] as $alias) {
                 if (!isset($alias['id'])) {
-                    $existingAlias = FundAlias::find($alias['id']);
-    
-                    if ($existingAlias) {
-                        $existingAlias->update($alias);
-                    } else {
-                        $response->aliases()->create($alias);
-                    }
+                    $response->aliases()->create($alias);
+                    continue;
                 }
 
-                $response->aliases()->create($alias);
+                $existingAlias = FundAlias::find($alias['id']);
+
+                if ($existingAlias) {
+                    $existingAlias->update($alias);
+                }
             }
         }
+
+        if ($data['fund_manager'])
 
         return $response;
     }
@@ -96,10 +97,51 @@ class FundService
         return true;
     }
 
-    public function findDuplicate(string $name): ?Fund
+    public function hasDuplicate(string $name, string $managerName): ?Fund
     {
-        $fundsWithSameManager = $this->model->whereRelation('fundManager', 'name', $name)->get();
+        $fundsWithSameManager = $this->model->whereRelation('fundManager', 'name', $managerName)->get();
 
-        return $this->model->where('name', $name)->first();
+        $hasDuplicate = false;
+
+        foreach ($fundsWithSameManager as $fund) {
+            $aliases = $fund->aliases;
+
+            $hasDuplicate = $aliases->contains('name', $name);
+        }
+
+        if ($fund->name === $name) {
+            $hasDuplicate = true;
+        }
+
+        return $hasDuplicate;
+    }
+
+    public function findDuplicates(): Collection
+    {
+        $funds = $this->model->all();
+
+        $duplicates = [];
+
+        foreach ($funds as $fund) {
+            $duplicate = $this->hasDuplicate($fund->name, $fund->fundManager->name);
+
+            if ($duplicate) {
+                $duplicates[] = $fund;
+                continue;
+            }
+
+            $aliases = $fund->aliases;
+
+            foreach ($aliases as $alias) {
+                $duplicate = $this->hasDuplicate($alias->name, $fund->fundManager->name);
+
+                if ($duplicate) {
+                    $duplicates[] = $fund;
+                    break;
+                }
+            }
+        }
+
+        return collect($duplicates)->unique();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Events\DuplicateFundWarning;
 use App\Events\FundCreated;
 use App\Services\FundService;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,8 +15,7 @@ class FundCreatedListener
      */
     public function __construct(
         protected FundService $fundService,
-    )
-    {
+    ) {
     }
 
     /**
@@ -32,7 +32,10 @@ class FundCreatedListener
             return;
         }
 
-        \Log::info('Fund created: ' . $fund->name . ' aliases: ' . $fund->aliases->count());
+        $hasDuplicate = $this->fundService->hasDuplicate($fund->name, $fund->fundManager->name);
 
+        if ($hasDuplicate) {
+            DuplicateFundWarning::dispatch($fund);
+        }
     }
 }

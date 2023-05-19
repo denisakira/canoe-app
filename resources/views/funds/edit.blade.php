@@ -14,12 +14,27 @@
     <form action="/funds" method="PATCH">
         @csrf
         <input hidden="true" id="id" value="{!! $fund->id !!}">
+
         <label for="name">Name</label>
         <input type="text" name="name" value="{!! $fund->name !!}" id="name" />
+
         <label for="start_year">Start Year</label>
         <input type="text" name="start_year" value="{!! $fund->start_year !!}" id="start_year" />
-        <label for="fund_manager_id">Fund Manager ID</label>
-        <input type="text" name="fund_manager_id" value="{!! $fund->fundManager->name !!}" id="fund_manager_id" />
+
+        <select id="fundManagerId">
+            @foreach ($fundManagers as $fundManager)
+            <option value="{!! $fundManager->id !!}">{!! $fundManager->name !!}</option>
+            @endforeach
+        </select>
+
+        <select id="aliases">
+            @foreach ($fund->aliases as $alias)
+            <option value="{!! $alias->id !!}">{!! $alias->name !!}</option>
+            @endforeach
+        </select>
+
+        <input value="{!! $alias->name !!}">
+
         <input type="button" id="submit" value="Submit" />
     </form>
 </body>
