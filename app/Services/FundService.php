@@ -79,7 +79,14 @@ class FundService
             }
         }
 
-        if ($data['fund_manager'])
+        if ($data['fund_manager']) {
+            $response->fundManager()->associate($data['fund_manager']);
+            $response->save();
+        }
+
+        if ($data['companies']) {
+            $response->companies()->sync($data['companies']);
+        }
 
         return $response;
     }
