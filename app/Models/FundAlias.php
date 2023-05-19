@@ -8,4 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class FundAlias extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'fund_id',
+    ];
+
+    public function fund()
+    {
+        return $this->belongsTo(Fund::class);
+    }
 }

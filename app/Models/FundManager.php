@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class FundManager extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+    ];
+
+    public function funds()
+    {
+        return $this->hasMany(Fund::class);
+    }
 }

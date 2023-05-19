@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\FundController;
+use App\Http\Controllers\FundManagerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::resource('/funds', FundController::class);
+
+Route::resource('/fund-managers', FundManagerController::class);
