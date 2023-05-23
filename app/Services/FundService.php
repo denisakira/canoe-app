@@ -104,20 +104,24 @@ class FundService
         return true;
     }
 
-    public function hasDuplicate(string $name, string $managerName): ?Fund
+    public function hasDuplicate(Fund $fund, string $managerName): bool
     {
         $fundsWithSameManager = $this->model->whereRelation('fundManager', 'name', $managerName)->get();
 
         $hasDuplicate = false;
 
-        foreach ($fundsWithSameManager as $fund) {
-            $aliases = $fund->aliases;
+        $fundsWithSameManager = $fundsWithSameManager->filter(function ($fundWithSameManager) use ($fund) {
+            return $fundWithSameManager->id !== $fund->id;
+        });
 
-            $hasDuplicate = $aliases->contains('name', $name);
-        }
+        foreach ($fundsWithSameManager as $f) {
+            $aliases = $f->aliases;
 
-        if ($fund->name === $name) {
-            $hasDuplicate = true;
+            $hasDuplicate = $aliases->contains('name', $f->name);
+
+            if ($fund->name == $f->name) {
+                $hasDuplicate = true;
+            }
         }
 
         return $hasDuplicate;

@@ -32,7 +32,7 @@ class FundCreatedListener
             return;
         }
 
-        $hasDuplicate = $this->fundService->hasDuplicate($fund->name, $fund->fundManager->name);
+        $hasDuplicate = $this->fundService->hasDuplicate($fund, $fund->fundManager->name);
 
         if ($hasDuplicate) {
             DuplicateFundWarning::dispatch($fund);

@@ -22,6 +22,6 @@ class DuplicateFundWarningListener
      */
     public function handle(DuplicateFundWarning $event): void
     {
-        DuplicateFund::create($event->fund);
+        \Log::info('DuplicateFundWarningListener: ' . $event->fund->name);
     }
 }

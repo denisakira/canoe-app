@@ -14,3 +14,30 @@ There are events and listeners to react to when the application creates an event
 ## Service
 
 The service holds most of the business logic of the application, serving as the inner most layer, which can be injected using Dependency Injection in any class that requires it.
+
+# Running the application
+
+1. Clone this repo
+
+2. Run the following command to run a minimal Docker application that installs Laravel Sail:
+
+```
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd):/var/www/html" \
+    -w /var/www/html \
+    laravelsail/php82-composer:latest \
+    composer install --ignore-platform-reqs
+```
+
+3. Run the command `./vendor/bin/sail up`
+
+4. In a separate Terminal, run the command `./vendor/bin/sail php artisan migrate` to run the migrations.
+
+5. (Optional) Run the command `./vendor/bin/sail php artisan db:seed` to run seeders.
+
+# Testing the application
+
+The basic entities of the application can be seen in a minimal UI interface in localhost/funds
+
+When a duplicate is created it will be logged in the laravel.logs file

@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('funds', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('name', 100)->unique();
+            $table->string('name', 100);
             $table->integer('start_year');
             $table->foreignIdFor(FundManager::class);
         });
